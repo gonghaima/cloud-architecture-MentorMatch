@@ -1,0 +1,245 @@
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  Api:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub
+        - ${ResourceName} From Stack ${AWS::StackName}
+        - ResourceName: Api
+      StageName: Prod
+      DefinitionBody:
+        openapi: '3.0'
+        info: {}
+        paths:
+          /users/{id}:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetUser.Arn}/invocations
+              responses: {}
+            put:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateUser.Arn}/invocations
+              responses: {}
+            delete:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DeleteUser.Arn}/invocations
+              responses: {}
+          /users:
+            get:
+              responses: {}
+            post:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ListIUsers.Arn}/invocations
+              responses: {}
+      EndpointConfiguration: REGIONAL
+      TracingEnabled: true
+      Cors:
+        MaxAge: 5
+  User:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+  ListIUsers:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-ListIUsers
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: ListIUsers
+      CodeUri: src/ListUsers
+      Handler: index.handler
+      Runtime: nodejs18.x
+      MemorySize: 1024
+      Timeout: 30
+      Tracing: Active
+      Environment:
+        Variables:
+          USER_TABLE_NAME: !Ref User
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref User
+      Events:
+        ApiPOSTusers:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: POST
+            RestApiId: !Ref Api
+  CreateUser:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-CreateUser
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: CreateUser
+      CodeUri: src/CreateUser
+      Handler: index.handler
+      Runtime: nodejs18.x
+      MemorySize: 1024
+      Timeout: 30
+      Tracing: Active
+      Events:
+        ApiPOSTusers:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: POST
+            RestApiId: !Ref Api
+      Environment:
+        Variables:
+          USER_TABLE_NAME: !Ref User
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref User
+  GetUser:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-GetUser
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: GetUser
+      CodeUri: src/GetUser
+      Handler: index.handler
+      Runtime: nodejs18.x
+      MemorySize: 1024
+      Timeout: 30
+      Tracing: Active
+      Events:
+        ApiGETusersid:
+          Type: Api
+          Properties:
+            Path: /users/{id}
+            Method: GET
+            RestApiId: !Ref Api
+      Environment:
+        Variables:
+          USER_TABLE_NAME: !Ref User
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref User
+  UpdateUser:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-UpdateUser
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: UpdateUser
+      CodeUri: src/UpdateUser
+      Handler: index.handler
+      Runtime: nodejs18.x
+      MemorySize: 1024
+      Timeout: 30
+      Tracing: Active
+      Events:
+        ApiPUTusersid:
+          Type: Api
+          Properties:
+            Path: /users/{id}
+            Method: PUT
+            RestApiId: !Ref Api
+      Environment:
+        Variables:
+          USER_TABLE_NAME: !Ref User
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref User
+  DeleteUser:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-DeleteUser
+      Description: !Sub
+        - Stack ${AWS::StackName} Function ${ResourceName}
+        - ResourceName: DeleteUser
+      CodeUri: src/DeleteUser
+      Handler: index.handler
+      Runtime: nodejs18.x
+      MemorySize: 1024
+      Timeout: 30
+      Tracing: Active
+      Events:
+        ApiDELETEusersid:
+          Type: Api
+          Properties:
+            Path: /users/{id}
+            Method: DELETE
+            RestApiId: !Ref Api
+      Environment:
+        Variables:
+          USER_TABLE_NAME: !Ref User
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref User
+  Subject:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+  Pairing:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+  mentorMatchBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${AWS::StackName}-mentormat-${AWS::AccountId}
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: aws:kms
+              KMSMasterKeyID: alias/aws/s3
+  mentorMatchBucketBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref mentorMatchBucket
+      PolicyDocument:
+        Id: RequireEncryptionInTransit
+        Version: '2012-10-17'
+        Statement:
+          - Principal: '*'
+            Action: '*'
+            Effect: Deny
+            Resource:
+              - !GetAtt mentorMatchBucket.Arn
+              - !Sub ${mentorMatchBucket.Arn}/*
+            Condition:
+              Bool:
+                aws:SecureTransport: 'false'
+Metadata:
+  AWS::Composer::Groups:
+    Group:
+      Label: API Compute
+      Members:
+        - CreateUser
+        - GetUser
+        - UpdateUser
+        - ListIUsers
+        - DeleteUser
