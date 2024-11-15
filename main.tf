@@ -92,6 +92,20 @@ resource "aws_lambda_function" "get_user" {
   }
 }
 
+resource "aws_lambda_function" "create_user" {
+  function_name = "CreateUser"
+  handler       = "createUser.handler"
+  runtime       = "nodejs18.x"
+  role          = aws_iam_role.lambda_exec.arn
+  filename      = "create_user_lambda_function_payload.zip"
+
+  environment {
+    variables = {
+      USER_TABLE_NAME = aws_dynamodb_table.user_table.name
+    }
+  }
+}
+
 resource "aws_iam_role" "lambda_exec" {
   name = "lambda_exec_role"
 
@@ -138,7 +152,14 @@ resource "aws_api_gateway_method" "get_user_method" {
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_integration" "lambda_integration" {
+resource "aws_api_gateway_method" "create_user_method" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.user_resource.id
+  http_method   = "POST"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "lambda_get_user_integration" {
   rest_api_id = aws_api_gateway_rest_api.api.id
   resource_id = aws_api_gateway_resource.user_id_resource.id
   http_method = aws_api_gateway_method.get_user_method.http_method
@@ -147,10 +168,27 @@ resource "aws_api_gateway_integration" "lambda_integration" {
   uri         = aws_lambda_function.get_user.invoke_arn
 }
 
-resource "aws_lambda_permission" "api_gateway" {
-  statement_id  = "AllowAPIGatewayInvoke"
+resource "aws_api_gateway_integration" "lambda_create_user_integration" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.user_resource.id
+  http_method = aws_api_gateway_method.create_user_method.http_method
+  type        = "AWS_PROXY"
+  integration_http_method = "POST"
+  uri         = aws_lambda_function.create_user.invoke_arn
+}
+
+resource "aws_lambda_permission" "api_gateway_get_user" {
+  statement_id  = "AllowAPIGatewayInvokeGetUser"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.get_user.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
+}
+
+resource "aws_lambda_permission" "api_gateway_create_user" {
+  statement_id  = "AllowAPIGatewayInvokeCreateUser"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.create_user.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
 }
