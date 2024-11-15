@@ -1,3 +1,16 @@
-curl https://13dxwn7p72.execute-api.ap-southeast-2.amazonaws.com/users/332
+curl https://guei0kbaua.execute-api.ap-southeast-2.amazonaws.com/prod/users/232
 
-curl https://guei0kbaua.execute-api.ap-southeast-2.amazonaws.com/users/23
+
+curl -X POST https://guei0kbaua.execute-api.ap-southeast-2.amazonaws.com/prod/users \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user": "user123",
+    "role": "student",
+    "username": "john_doe",
+    "password": "securepassword",
+    "address": "123 Main St",
+    "postcode": "12345",
+    "offering": ["math", "science"],
+    "studying": ["history", "art"]
+  }'
+

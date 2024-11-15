@@ -1,3 +1,9 @@
+variable "region" {
+  description = "The AWS region to deploy resources in"
+  type        = string
+  default     = "ap-southeast-2"
+}
+
 terraform {
   required_providers {
     aws = {
@@ -8,8 +14,10 @@ terraform {
 }
 
 provider "aws" {
-  region = "ap-southeast-2"
+  region = var.region
 }
+
+data "aws_caller_identity" "current" {}
 
 resource "aws_dynamodb_table" "user_table" {
   name           = "User"
@@ -110,11 +118,11 @@ resource "aws_iam_role" "lambda_exec" {
   name = "lambda_exec_role"
 
   assume_role_policy = jsonencode({
-    Version = "2012-10-17"
+    Version = "2012-10-17",
     Statement = [
       {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
         Principal = {
           Service = "lambda.amazonaws.com"
         }
@@ -126,6 +134,26 @@ resource "aws_iam_role" "lambda_exec" {
 resource "aws_iam_role_policy_attachment" "lambda_policy" {
   role       = aws_iam_role.lambda_exec.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_iam_role_policy" "lambda_dynamodb_policy" {
+  name   = "lambda_dynamodb_policy"
+  role   = aws_iam_role.lambda_exec.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem",
+          "dynamodb:DeleteItem"
+        ],
+        Resource = "arn:aws:dynamodb:${var.region}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.user_table.name}"
+      }
+    ]
+  })
 }
 
 resource "aws_api_gateway_rest_api" "api" {
@@ -291,4 +319,29 @@ resource "aws_lambda_permission" "api_gateway_create_user" {
   function_name = aws_lambda_function.create_user.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
+}
+
+resource "aws_api_gateway_deployment" "api_deployment" {
+  depends_on = [
+    aws_api_gateway_method.get_user_method,
+    aws_api_gateway_method.create_user_method,
+    aws_api_gateway_method.options_user_method,
+    aws_api_gateway_method.options_user_id_method,
+    aws_api_gateway_integration.lambda_get_user_integration,
+    aws_api_gateway_integration.lambda_create_user_integration,
+    aws_api_gateway_integration.options_user_integration,
+    aws_api_gateway_integration.options_user_id_integration
+  ]
+
+  rest_api_id = aws_api_gateway_rest_api.api.id
+}
+
+resource "aws_api_gateway_stage" "api_stage" {
+  deployment_id = aws_api_gateway_deployment.api_deployment.id
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  stage_name    = "prod"
+}
+
+output "api_gateway_url" {
+  value = "https://${aws_api_gateway_rest_api.api.id}.execute-api.${var.region}.amazonaws.com/${aws_api_gateway_stage.api_stage.stage_name}"
 }

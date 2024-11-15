@@ -38,8 +38,10 @@ TF_LOG=DEBUG terraform apply -auto-approve
     terraform import aws_iam_role.lambda_exec lambda_exec_role
     ```
 
-### API gateway, enable CORS
-not working - in api gateway, Resources, top right corner, click "Enable CORS"
+### Deploy lambda
+aws lambda update-function-code --function-name GetUser --zip-file fileb://Get_user_lambda_function_payload.zip
+
+aws lambda update-function-code --function-name CreateUser --zip-file fileb://create_user_lambda_function_payload.zip
 
 
 db schema planned
