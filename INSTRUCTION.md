@@ -10,7 +10,7 @@ run "terraform init"
 
 ### Prepare zip task
 touch zip_lambda.sh
-chmod +x zip_lambda.sh
+chmod +x zip_lambda.bat
 
 ### Execute task
 ./zip_lambda.sh
@@ -28,4 +28,15 @@ terraform apply -auto-approve
 TF_LOG=DEBUG terraform apply -auto-approve
 
     #### Helper
+
+    - If errors as below
+    Table already exists: Subject...
+    declare the following
+    ```shell
+    terraform import aws_dynamodb_table.user_table User
+    terraform import aws_dynamodb_table.subject_table Subject
+    terraform import aws_iam_role.lambda_exec lambda_exec_role
+    ```
+
+    - sf
         

@@ -1,5 +1,95 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.76.0"  # Adjust the version as needed
+    }
+  }
+}
+
 provider "aws" {
   region = "ap-southeast-2"
+}
+
+resource "aws_dynamodb_table" "user_table" {
+  name           = "User"
+  billing_mode   = "PAY_PER_REQUEST"
+  hash_key       = "user"
+
+  attribute {
+    name = "user"
+    type = "S"
+  }
+}
+
+resource "aws_dynamodb_table" "subject_table" {
+  name           = "Subject"
+  billing_mode   = "PAY_PER_REQUEST"
+  hash_key       = "key"
+
+  attribute {
+    name = "key"
+    type = "S"
+  }
+}
+
+resource "aws_dynamodb_table_item" "subject_math" {
+  table_name = aws_dynamodb_table.subject_table.name
+  hash_key   = "key"
+  item = <<ITEM
+{
+  "key": {"S": "math"},
+  "value": {"S": "Math"}
+}
+ITEM
+}
+
+resource "aws_dynamodb_table_item" "subject_english" {
+  table_name = aws_dynamodb_table.subject_table.name
+  hash_key   = "key"
+  item = <<ITEM
+{
+  "key": {"S": "english"},
+  "value": {"S": "English"}
+}
+ITEM
+}
+
+resource "aws_dynamodb_table_item" "subject_computing" {
+  table_name = aws_dynamodb_table.subject_table.name
+  hash_key   = "key"
+  item = <<ITEM
+{
+  "key": {"S": "computing"},
+  "value": {"S": "Computing"}
+}
+ITEM
+}
+
+resource "aws_dynamodb_table_item" "subject_physics" {
+  table_name = aws_dynamodb_table.subject_table.name
+  hash_key   = "key"
+  item = <<ITEM
+{
+  "key": {"S": "physics"},
+  "value": {"S": "Physics"}
+}
+ITEM
+}
+
+resource "aws_lambda_function" "get_user" {
+  function_name = "GetUser"
+  handler       = "getUser.handler"
+  runtime       = "nodejs18.x"
+  role          = aws_iam_role.lambda_exec.arn
+  filename      = "get_user_lambda_function_payload.zip"
+
+  environment {
+    variables = {
+      USER_TABLE_NAME = aws_dynamodb_table.user_table.name
+      SUBJECT_TABLE_NAME = aws_dynamodb_table.subject_table.name
+    }
+  }
 }
 
 resource "aws_iam_role" "lambda_exec" {
@@ -24,17 +114,43 @@ resource "aws_iam_role_policy_attachment" "lambda_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-resource "aws_lambda_function" "get_user" {
-  function_name = "GetUser"
-  handler       = "index.handler"
-  runtime       = "nodejs20.x"
-  role          = aws_iam_role.lambda_exec.arn
-  filename      = "get_user_lambda_function_payload.zip"
+resource "aws_api_gateway_rest_api" "api" {
+  name        = "UserAPI"
+  description = "API for user management"
+}
 
-  environment {
-    variables = {
-      USER_TABLE_NAME = "User"
-      SUBJECT_TABLE_NAME = "Subject"
-    }
-  }
+resource "aws_api_gateway_resource" "user_resource" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  path_part   = "users"
+}
+
+resource "aws_api_gateway_resource" "user_id_resource" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_resource.user_resource.id
+  path_part   = "{id}"
+}
+
+resource "aws_api_gateway_method" "get_user_method" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.user_id_resource.id
+  http_method   = "GET"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "lambda_integration" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.user_id_resource.id
+  http_method = aws_api_gateway_method.get_user_method.http_method
+  type        = "AWS_PROXY"
+  integration_http_method = "POST"
+  uri         = aws_lambda_function.get_user.invoke_arn
+}
+
+resource "aws_lambda_permission" "api_gateway" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.get_user.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
 }
