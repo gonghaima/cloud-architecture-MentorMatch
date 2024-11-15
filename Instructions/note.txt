@@ -1,0 +1,5 @@
+terraform apply hang, with log below
+
+2024-11-15T05:46:49.268+1100 [TRACE] dag/walk: vertex "aws_dynamodb_table.user_table (expand)" is waiting for "provider[\"registry.terraform.io/hashicorp/aws\"]"
+2024-11-15T05:46:49.268+1100 [TRACE] dag/walk: vertex "root" is waiting for "provider[\"registry.terraform.io/hashicorp/aws\"] (close)"
+2024-11-15T05:46:49.268+1100 [TRACE] dag/walk: vertex "aws_api_gateway_method.get_user_method (expand)" is waiting for "aws_api_gateway_resource.user_id_resource (expand)"
