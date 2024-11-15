@@ -14,3 +14,15 @@ curl -X POST https://guei0kbaua.execute-api.ap-southeast-2.amazonaws.com/prod/us
     "studying": ["history", "art"]
   }'
 
+
+curl -X PUT https://guei0kbaua.execute-api.ap-southeast-2.amazonaws.com/prod/users/user123 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "role": "student",
+    "username": "hon",
+    "password": "newsecurepassword",
+    "address": "456 Main St",
+    "postcode": "67890",
+    "offering": ["math", "science"],
+    "studying": ["history", "art"]
+  }'
