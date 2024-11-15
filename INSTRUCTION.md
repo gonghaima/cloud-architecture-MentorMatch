@@ -40,3 +40,21 @@ TF_LOG=DEBUG terraform apply -auto-approve
 
 ### API gateway, enable CORS
 not working - in api gateway, Resources, top right corner, click "Enable CORS"
+
+
+db schema planned
+
+user 
+	role
+	username
+	password
+	address
+	postcode
+	offering
+	studying
+
+subject
+	math
+	english
+	computing
+	physics
