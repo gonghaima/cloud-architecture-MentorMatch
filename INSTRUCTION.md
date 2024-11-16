@@ -44,6 +44,11 @@ aws lambda update-function-code --function-name GetUser --zip-file fileb://Get_u
 aws lambda update-function-code --function-name CreateUser --zip-file fileb://create_user_lambda_function_payload.zip
 
 aws lambda update-function-code --function-name UpdateUser --zip-file fileb://update_user_lambda_function_payload.zip
+aws lambda update-function-code --function-name ListUsers --zip-file fileb://list_users_lambda_function_payload.zip
+
+
+### if show {"message":"Missing Authentication Token"}
+need to "redeploy" button top right corner
 
 db schema planned
 

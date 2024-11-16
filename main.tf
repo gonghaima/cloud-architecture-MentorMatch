@@ -128,6 +128,20 @@ resource "aws_lambda_function" "update_user" {
   }
 }
 
+resource "aws_lambda_function" "list_users" {
+  function_name = "ListUsers"
+  handler       = "listUsers.handler"
+  runtime       = "nodejs18.x"
+  role          = aws_iam_role.lambda_exec.arn
+  filename      = "list_users_lambda_function_payload.zip"
+
+  environment {
+    variables = {
+      USER_TABLE_NAME = aws_dynamodb_table.user_table.name
+    }
+  }
+}
+
 resource "aws_iam_role" "lambda_exec" {
   name = "lambda_exec_role"
 
@@ -163,7 +177,8 @@ resource "aws_iam_role_policy" "lambda_dynamodb_policy" {
           "dynamodb:PutItem",
           "dynamodb:GetItem",
           "dynamodb:DeleteItem",
-          "dynamodb:UpdateItem"
+          "dynamodb:UpdateItem",
+          "dynamodb:Scan"
         ],
         Resource = "arn:aws:dynamodb:${var.region}:${data.aws_caller_identity.current.account_id}:table/${aws_dynamodb_table.user_table.name}"
       }
@@ -188,6 +203,12 @@ resource "aws_api_gateway_resource" "user_id_resource" {
   path_part   = "{id}"
 }
 
+resource "aws_api_gateway_resource" "user_search_resource" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  path_part   = "users-search"
+}
+
 resource "aws_api_gateway_method" "get_user_method" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   resource_id   = aws_api_gateway_resource.user_id_resource.id
@@ -206,6 +227,13 @@ resource "aws_api_gateway_method" "update_user_method" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   resource_id   = aws_api_gateway_resource.user_id_resource.id
   http_method   = "PUT"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_method" "list_users_method" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.user_search_resource.id
+  http_method   = "POST"
   authorization = "NONE"
 }
 
@@ -248,6 +276,15 @@ resource "aws_api_gateway_integration" "lambda_update_user_integration" {
   type        = "AWS_PROXY"
   integration_http_method = "POST"
   uri         = aws_lambda_function.update_user.invoke_arn
+}
+
+resource "aws_api_gateway_integration" "lambda_list_users_integration" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.user_search_resource.id
+  http_method = aws_api_gateway_method.list_users_method.http_method
+  type        = "AWS_PROXY"
+  integration_http_method = "POST"
+  uri         = aws_lambda_function.list_users.invoke_arn
 }
 
 resource "aws_api_gateway_integration" "options_user_integration" {
@@ -360,16 +397,26 @@ resource "aws_lambda_permission" "api_gateway_update_user" {
   source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
 }
 
+resource "aws_lambda_permission" "api_gateway_list_users" {
+  statement_id  = "AllowAPIGatewayInvokeListUsers"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.list_users.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
+}
+
 resource "aws_api_gateway_deployment" "api_deployment" {
   depends_on = [
     aws_api_gateway_method.get_user_method,
     aws_api_gateway_method.create_user_method,
     aws_api_gateway_method.update_user_method,
+    aws_api_gateway_method.list_users_method,
     aws_api_gateway_method.options_user_method,
     aws_api_gateway_method.options_user_id_method,
     aws_api_gateway_integration.lambda_get_user_integration,
     aws_api_gateway_integration.lambda_create_user_integration,
     aws_api_gateway_integration.lambda_update_user_integration,
+    aws_api_gateway_integration.lambda_list_users_integration,
     aws_api_gateway_integration.options_user_integration,
     aws_api_gateway_integration.options_user_id_integration
   ]

@@ -26,3 +26,22 @@ curl -X PUT https://guei0kbaua.execute-api.ap-southeast-2.amazonaws.com/prod/use
     "offering": ["math", "science"],
     "studying": ["history", "art"]
   }'
+
+
+curl -X POST https://guei0kbaua.execute-api.ap-southeast-2.amazonaws.com/prod/users-search \
+  -H "Content-Type: application/json" \
+  -d '{
+    "role": "student",
+    "username": "john_doe",
+    "address": "123 Main St",
+    "postcode": "12345",
+    "offering": "math",
+    "studying": "history"
+  }'
+
+curl -X POST https://guei0kbaua.execute-api.ap-southeast-2.amazonaws.com/prod/users-search \
+  -H "Content-Type: application/json" \
+  -d '{
+    "role": "student",
+    "studying": "history"
+  }'
