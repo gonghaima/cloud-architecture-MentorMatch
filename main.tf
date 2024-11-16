@@ -47,7 +47,7 @@ resource "aws_dynamodb_table_item" "subject_math" {
   item = <<ITEM
 {
   "key": {"S": "math"},
-  "value": {"S": "Math"}
+  "value": {"L": [{"S": "Math"}]}
 }
 ITEM
 }
@@ -58,7 +58,7 @@ resource "aws_dynamodb_table_item" "subject_english" {
   item = <<ITEM
 {
   "key": {"S": "english"},
-  "value": {"S": "English"}
+  "value": {"L": [{"S": "English"}]}
 }
 ITEM
 }
@@ -69,7 +69,7 @@ resource "aws_dynamodb_table_item" "subject_computing" {
   item = <<ITEM
 {
   "key": {"S": "computing"},
-  "value": {"S": "Computing"}
+  "value": {"L": [{"S": "Computing"}]}
 }
 ITEM
 }
@@ -80,7 +80,7 @@ resource "aws_dynamodb_table_item" "subject_physics" {
   item = <<ITEM
 {
   "key": {"S": "physics"},
-  "value": {"S": "Physics"}
+  "value": {"L": [{"S": "Physics"}]}
 }
 ITEM
 }
