@@ -39,7 +39,7 @@ TF_LOG=DEBUG terraform apply -auto-approve
     ```
 
 ### Deploy lambda
-aws lambda update-function-code --function-name GetUser --zip-file fileb://Get_user_lambda_function_payload.zip
+aws lambda update-function-code --function-name GetUser --zip-file fileb://get_user_lambda_function_payload.zip
 
 aws lambda update-function-code --function-name CreateUser --zip-file fileb://create_user_lambda_function_payload.zip
 
