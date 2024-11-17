@@ -23,3 +23,9 @@ after that, choose the following stack
 ### Creating template
 https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-autoscaling-launch-templates.html#environments-cfg-autoscaling-launch-templates-options
 
+### Setup Frontend
+<!-- npx degit gravity-ui/gravity-ui-vite-example#main MentorMatchApp -->
+npm create vite@latest
+MentorMatchApp
+
+

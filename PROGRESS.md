@@ -1,14 +1,17 @@
 TODO:
 
-Complete all lambda api
+- [X] Complete all lambda api
 
-Subject Table, key value , the value should be a string array, need update.
+- [X] Subject Table, key value , the value should be a string array, need update.
 
-Elastic Beanstalk setup
+- [X] Elastic Beanstalk setup
+- [] Use S3 store images of user
+- [] SignIn / SignUp function
+- [] Frontend / Backend code setup
 
-Frontend / Backend code setup
+- [] Third party api
 
-Third party api
-
-Analytics service
+- [] Analytics service
+- [] Checkbox not checked
+- [X]
 

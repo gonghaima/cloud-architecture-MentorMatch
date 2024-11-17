@@ -1,31 +1,4 @@
-> jest deleteUser
+for Create new account and 
+I'm already a member
 
- FAIL  lambdaFunctions/Test/deleteUser.test.js
-
-
-  ● Test suite failed to run
-
-    ResourceNotFoundException: Requested resource not found
-
-      35 |       Key: { user: userId },
-      36 |     };
-    > 37 |     await ddbDocClient.send(new DeleteCommand(params));
-         |     ^
-      38 |   });
-      39 |
-      40 |   test('should delete an existing user successfully', async () => {
-
-      at de_ResourceNotFoundExceptionRes (lambdaFunctions/node_modules/@aws-sdk/client-dynamodb/dist-cjs/index.js:2477:21)
-      at de_CommandError (lambdaFunctions/node_modules/@aws-sdk/client-dynamodb/dist-cjs/index.js:2146:19)
-      at lambdaFunctions/node_modules/@smithy/middleware-serde/dist-cjs/index.js:35:20
-      at lambdaFunctions/node_modules/@aws-sdk/lib-dynamodb/dist-cjs/index.js:166:30
-      at lambdaFunctions/node_modules/@smithy/core/dist-cjs/index.js:168:18
-      at lambdaFunctions/node_modules/@smithy/middleware-retry/dist-cjs/index.js:320:38
-      at lambdaFunctions/node_modules/@aws-sdk/middleware-logger/dist-cjs/index.js:34:22
-      at Object.<anonymous> (lambdaFunctions/Test/deleteUser.test.js:37:5)
-
-Test Suites: 1 failed, 1 total                                                                                                                                                                                                                                                                                                        
-Tests:       2 passed, 2 total                                                                                                                                                                                                                                                                                                        
-Snapshots:   0 total
-Time:        1.593 s, estimated 7 s
-Ran all test suites matching /deleteUser/i.
+can you add navigation as well?
