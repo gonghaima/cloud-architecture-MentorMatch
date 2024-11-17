@@ -1,0 +1,25 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #191919;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.App {
+  padding: 0;
+  outline: none;
+  box-sizing: border-box;
+  font-family: 'Raleway', sans-serif;
+  position: relative;
+  display: block;
+  width: 90%;
+  height: 700px;
+  margin: 50px auto;
+  border-radius: 8px;
+  overflow: hidden;
+  background: linear-gradient(to right, #232f41, #374a62);
+}
