@@ -1,4 +1,2 @@
-for Create new account and 
-I'm already a member
-
-can you add navigation as well?
+curl https://guei0kbaua.execute-api.ap-southeast-2.amazonaws.com/prod/users/user123
+{"offering":["math","science"],"password":"newsecurepassword","postcode":"67890","role":"student","studying":["history","art"],"user":"user123","username":"hon","address":"456 Main St"}
