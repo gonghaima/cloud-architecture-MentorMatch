@@ -5,7 +5,7 @@ TODO:
 - [X] Subject Table, key value , the value should be a string array, need update.
 
 - [X] Elastic Beanstalk setup
-- [] Use S3 store images of user
+- [X] Use S3 store images of user
 - [] SignIn / SignUp function
 - [] Frontend / Backend code setup
 

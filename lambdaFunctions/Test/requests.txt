@@ -1,3 +1,8 @@
+api_gateway_url = "https://guei0kbaua.execute-api.ap-southeast-2.amazonaws.com/prod"
+user_profile_images_distribution_domain = "dc4174lh3tfw5.cloudfront.net"
+website_images_distribution_domain = "da8u6bv2e1zjh.cloudfront.net"
+
+
 curl https://guei0kbaua.execute-api.ap-southeast-2.amazonaws.com/prod/users/user123
 
 
