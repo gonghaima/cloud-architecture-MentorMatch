@@ -41,4 +41,5 @@ terraform.rc
 
 *.zip
 lambdaFunctions/node_modules
+elasticbeanstalk/node_modules
 node_modules/
