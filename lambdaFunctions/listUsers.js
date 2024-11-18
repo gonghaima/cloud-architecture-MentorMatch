@@ -6,7 +6,7 @@ const ddbDocClient = DynamoDBDocumentClient.from(client);
 
 exports.handler = async (event) => {
   const requestBody = JSON.parse(event.body);
-  const { role, username, address, postcode, offering, studying } = requestBody;
+  const { role, username, address, postcode, offering, studying, email } = requestBody;
 
   let filterExpression = [];
   let expressionAttributeNames = {};
@@ -36,6 +36,10 @@ exports.handler = async (event) => {
   if (studying) {
     filterExpression.push('contains(studying, :s)');
     expressionAttributeValues[':s'] = studying;
+  }
+  if (email) {
+    filterExpression.push('contains(email, :s)');
+    expressionAttributeValues[':e'] = email;
   }
 
   const params = {

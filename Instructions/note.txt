@@ -1,2 +1,55 @@
+This is current SignIn.jsx
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import './Auth.css';
+
+const SignIn = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="form-cont">
+      <div className="top-buttons">
+        <button
+          className="to-signup"
+          onClick={() => navigate('/signup')}
+        >
+          Sign Up
+        </button>
+        <button
+          className="to-signin top-active-button"
+        >
+          Sign In
+        </button>
+      </div>
+      <div className="form form-signin">
+        <form>
+          <label>E-MAIL</label>
+          <input type="email" placeholder="Your e-mail" />
+          <label>PASSWORD</label>
+          <input type="password" placeholder="Your password" />
+          <input type="submit" className="form-btn" value="Sign In" />
+          <br />
+          <br />
+          <Link to="/signup" className="lined-link to-signup-link">
+            Create new account
+          </Link>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default SignIn;
+
+
+
+Can I have the actual signIn feature.
+
+It will make a request as below with user id 'user123', then compare username and password between form data value and api returned data?
 curl https://guei0kbaua.execute-api.ap-southeast-2.amazonaws.com/prod/users/user123
 {"offering":["math","science"],"password":"newsecurepassword","postcode":"67890","role":"student","studying":["history","art"],"user":"user123","username":"hon","address":"456 Main St"}
+
+
+If matches, set auth user globally, then go to dashboard page.
+
+If not, log a console error

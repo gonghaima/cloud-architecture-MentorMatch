@@ -1,9 +1,53 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { baseUrl } from '../config';
 import './Auth.css';
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(`${baseUrl}/users-search`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      // const response = await fetch(`${baseUrl}/users/user123`,  {
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Access-Control-Allow-Origin': '*',
+      //   },
+      // });
+
+      const data = await response.json()
+      if (!data) {
+        throw new Error('Empty response body');
+      }
+
+      console.log(data);
+      if (data.length > 0) {
+        const user = data[0];
+        if (user.password === password) {
+          navigate('/dashboard', { state: { user } });
+        } else {
+          console.error('Invalid password');
+        }
+      } else {
+        console.error('Email not found');
+      }
+    } catch (error) {
+      console.error('Error during sign-in:', error);
+    }
+  };
 
   return (
     <div className="form-cont">
@@ -21,11 +65,21 @@ const SignIn = () => {
         </button>
       </div>
       <div className="form form-signin">
-        <form>
+        <form onSubmit={handleSignIn}>
           <label>E-MAIL</label>
-          <input type="email" placeholder="Your e-mail" />
+          <input
+            type="email"
+            placeholder="Your e-mail"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
           <label>PASSWORD</label>
-          <input type="password" placeholder="Your password" />
+          <input
+            type="password"
+            placeholder="Your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
           <input type="submit" className="form-btn" value="Sign In" />
           <br />
           <br />

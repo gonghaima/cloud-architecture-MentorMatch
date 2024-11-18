@@ -25,7 +25,7 @@ export TF_LOG=trace
 export TF_LOG_PATH=./terraform.log
 
 terraform apply -auto-approve
-TF_LOG=DEBUG terraform apply -auto-approve
+TF_LOG=DEBUG terraform apply -auto-approve 
 
     #### Helper
 

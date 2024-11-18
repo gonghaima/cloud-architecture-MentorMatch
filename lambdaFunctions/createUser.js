@@ -18,7 +18,8 @@ exports.handler = async (event) => {
             address: address,
             postcode: postcode,
             offering: offering,
-            studying: studying
+            studying: studying,
+            ...requestBody,
         },
     };
 
