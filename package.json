@@ -4,12 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "setupSampleUsers": "node setupSampleUsers.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.693.0",
+    "uuid": "^11.0.3"
   }
 }

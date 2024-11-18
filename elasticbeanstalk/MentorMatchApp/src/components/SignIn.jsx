@@ -16,19 +16,11 @@ const SignIn = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
         },
         body: JSON.stringify({ email }),
       });
 
-      // const response = await fetch(`${baseUrl}/users/user123`,  {
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     'Access-Control-Allow-Origin': '*',
-      //   },
-      // });
-
-      const data = await response.json()
+      const data = await response.json();
       if (!data) {
         throw new Error('Empty response body');
       }

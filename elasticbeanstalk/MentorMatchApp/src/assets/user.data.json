@@ -1,0 +1,41 @@
+a sample user data
+[
+    {
+        "password": "asdf",
+        "offering": [
+            "math",
+            "science"
+        ],
+        "role": "student",
+        "postcode": "12345",
+        "studying": [
+            "history",
+            "art"
+        ],
+        "user": "user123",
+        "username": "john_doe",
+        "address": "123 Main St",
+        "email": "test@gmail.com",
+        "profilePic": "https://dc4174lh3tfw5.cloudfront.net/men1.jpg"
+    }
+]
+
+with one of the man or woman profile picture from the following range of links
+
+https://dc4174lh3tfw5.cloudfront.net/men1.jpg
+to
+https://dc4174lh3tfw5.cloudfront.net/men50.jpg
+
+
+https://dc4174lh3tfw5.cloudfront.net/women1.jpg
+to
+https://dc4174lh3tfw5.cloudfront.net/women50.jpg
+
+
+
+with one of the following Subject?
+
+physics
+math
+english
+computing

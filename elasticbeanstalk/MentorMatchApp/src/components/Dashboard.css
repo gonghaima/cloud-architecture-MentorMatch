@@ -1,0 +1,13 @@
+.dashboard {
+    padding: 20px;
+  }
+  
+  .dashboard-header {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .dashboard-content {
+    padding: 20px;
+  }
