@@ -37,9 +37,11 @@ const Dashboard = () => {
     }, [location.state]);
 
     const handleLogout = () => {
-        // Clear user session (if any)
-        // localStorage.removeItem('authUser'); // Uncomment if using localStorage for session management
         navigate('/signin');
+    };
+
+    const handleAnalytics = () => {
+        navigate('/analytics', { state: { user } });
     };
 
     return (
@@ -51,9 +53,14 @@ const Dashboard = () => {
                         <p>Email: {user.email}</p>
                         <p>Role: {user.role}</p>
                     </div>
-                    <button className="logout-button" onClick={handleLogout}>
-                        Logout
-                    </button>
+                    <div className="header-buttons">
+                        <button className="analytics-button" onClick={handleAnalytics}>
+                            Analytics
+                        </button>
+                        <button className="logout-button" onClick={handleLogout}>
+                            Logout
+                        </button>
+                    </div>
                 </header>
             )}
             <div className="dashboard-content">

@@ -31,22 +31,38 @@
     flex: 1;
 }
 
+.header-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.analytics-button,
 .logout-button {
     color: #fff;
     font-size: 18px;
     font-weight: 300;
     padding: 12px 55px;
-    margin-right: 20px;
     border: none;
     cursor: pointer;
     border-radius: 35px;
     transition: all 0.3s linear;
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.55);
+}
+
+.analytics-button {
     background: linear-gradient(to right, #5bcdbe, #41ab9e);
 }
 
-.logout-button:hover {
+.analytics-button:hover {
     background: linear-gradient(to right, #41ab9e, #5bcdbe);
+}
+
+.logout-button {
+    background: linear-gradient(to right, #ff4d4d, #ff1a1a);
+}
+
+.logout-button:hover {
+    background: linear-gradient(to right, #ff1a1a, #ff4d4d);
 }
 
 .dashboard-content {
